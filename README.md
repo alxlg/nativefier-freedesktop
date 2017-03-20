@@ -1,6 +1,8 @@
 # nativefier-freedesktop
 Script to automate the installation of Nativefier (Electron) web apps on Linux, following Freedesktop specifications.
 
+![Example of Web App](readme_images/example.jpg)
+
 ## Introduction
 [Nativefier](https://www.npmjs.com/package/nativefier) is a script that automatically build web apps with [Electron](https://electron.atom.io/) technology starting from URLs. It creates a folder with portable web app. The aim of nativefier-freedesktop is to install it instead, following Freedesktop specifications for Linux desktops. Also, it support injection of custom CSS stylesheets and JavaScript code, so it's useful to distribute customized versions of web apps.
 
@@ -40,8 +42,12 @@ You can use "righ click > install" on .webapp files following these instruction:
 2. Open System Settings > File Associations, select "application" category and click "add" to define a new file type with "webapp" as name and "*.webapp" as filename pattern. Check that the name is correct: you should read "File type application/webapp" at the top. Push "Apply".
 3. Be sure nativefier-freedesktop is in your `$PATH`.
 
+![Service Menu](readme_images/service-menu.jpg)
+
 ## Uninstall a Web App
 On KDE Plasma you can right-clik on the launcher of the Web App and click "Uninstall".
+
+![Uninstall entry](readme_images/unistall.jpg)
 
 ## How to create .webapp files
 1. Download a .webapp file as example.
@@ -53,6 +59,8 @@ On KDE Plasma you can right-clik on the launcher of the Web App and click "Unins
 
 ### Specifications for .webapp files
 As just said, .webapp files are .tar.gz archives with the 6 following files (no folders):
+
+![Uninstall entry](readme_images/files.jpg)
 
 1. `name` - text file that contains only the name of the app (not displayed to the user, that is defined in .desktop launcher). Use reverse URL as convetion, i.e. org.kde.phabricator. If yours is for self-hostable apps like Nextcloud or Diaspora, use simply nextcloud and diaspora.
 

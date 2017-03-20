@@ -1,0 +1,73 @@
+#!/bin/bash 
+
+# make temp folder:
+mkdir .nf_temp;
+
+# copy the .webapp into it:
+cp "$1" .nf_temp/"$1"
+
+# move to it:
+cd .nf_temp;
+
+# extract .webapp:
+tar -zxvf "$1";
+
+# check if "name" file exists:
+if [ -f name ]; then
+    # if yes, assign "name" var to its content:
+    name=`cat name`;
+else
+    # if not, ask to the user to insert it
+    # (useful for self-hosted apps with custom domain)
+    # as convention use reverse URL, i.e. org.kde.webapp:
+    name=`kdialog --inputbox "Name, i.e. org.kde.webapp:" | tr ' ' '_'`
+fi
+
+# check if "url" file exists:
+if [ -f url ]; then
+    # if yes, assign "url" var to its content:
+    url=`cat url`;
+else
+    # if not, ask to the user to insert it
+    # (useful for self-hosted apps with custom domain):
+    url=`kdialog --inputbox URL:`
+fi
+
+# copy the icon and the launcher to respective paths:
+cp "$name".png ~/.local/share/icons/"$name".png;
+cp "$name".desktop ~/.local/share/applications/"$name".desktop;
+
+# make launcher executable:
+chmod +x .desktop ~/.local/share/applications/"$name".desktop;
+
+# make hidden directory ".webapp" in Home to store installed webapps:
+mkdir ~/.webapps;
+
+# make "lib" folder in .webapp folder:
+mkdir ~/.webapps/lib;
+
+# exec nativefier injecting style.css and script.js
+nativefier -n "$name" -i "$name".png --inject style.css --inject script.js "$url" ~/.webapps/;
+
+# come back to parent folder:
+cd ..;
+
+# remove temp folder:
+rm -rf .nf_temp;
+
+# rename the installation folder removing "-linux-x64" from the name:
+mv -f ~/.webapps/"$name"-linux-x64 ~/.webapps/"$name";
+
+# move to installation folder:
+cd ~/.webapps/"$name";
+
+# move the libraries that can be shared to "lib":
+mv -f libffmpeg.so ~/.webapps/lib/libffmpeg.so;
+mv -f libnode.so ~/.webapps/lib/libnode.so;
+
+# make links in installation folder to shared libraries in "lib":
+ln -s -T ../lib/libffmpeg.so libffmpeg.so;
+ln -s -T ../lib/libnode.so libnode.so;
+
+# show notification:
+kdialog --passivepopup "Installation completed.";
