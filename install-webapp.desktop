@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Service
+ServiceTypes=KonqPopupMenu/Plugin
+MimeType=application/webapp
+Actions=build;
+X-KDE-Priority=TopLevel
+X-KDE-StartupNotify=false
+Icon=text-x-install
+
+[Desktop Action build]
+Name=Install
+Name[it]=Installa
+Icon=package-install
+Exec=nativefier-freedesktop %f
