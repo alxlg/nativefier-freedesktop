@@ -23,7 +23,7 @@ nativefier-freedesktop uses a custom file type as input: .webapp files. Each .we
 npm is a package manager for JavaScript, you can install it from your distribution packages. Then use it to install nativefier:
 
 ```
-npm install nativefier -g
+sudo npm install nativefier -g
 ```
 
 ## nativefier-freedesktop from command line and installation
