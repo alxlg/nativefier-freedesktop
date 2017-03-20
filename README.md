@@ -1,7 +1,11 @@
 # nativefier-freedesktop
 Script to automate the installation of Nativefier (Electron) web apps on Linux, following Freedesktop specifications.
 
+Example of Web App built with this script (it's KDE Phabricator at phabricator.kde.org):
 ![Example of Web App](readme_images/example.jpg)
+It can be launched from app menu with a themable icon, it uses custom CSS and native notifications:
+
+![Notification](readme_images/notification.jpg)
 
 ## Introduction
 [Nativefier](https://www.npmjs.com/package/nativefier) is a script that automatically build web apps with [Electron](https://electron.atom.io/) technology starting from URLs. It creates a folder with portable web app. The aim of nativefier-freedesktop is to install it instead, following Freedesktop specifications for Linux desktops. Also, it support injection of custom CSS stylesheets and JavaScript code, so it's useful to distribute customized versions of web apps.
