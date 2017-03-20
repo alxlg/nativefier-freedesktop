@@ -1,16 +1,22 @@
 #!/bin/bash 
 
+if [[ $# -eq 0 ]] ; then
+    webapp=`kdialog --getopenfilename ~ .webapp`;
+else
+    webapp="$1";
+fi
+
 # make temp folder:
 mkdir .nf_temp;
 
 # copy the .webapp into it:
-cp "$1" .nf_temp/"$1"
+cp "$webapp" .nf_temp/"$webapp"
 
 # move to it:
 cd .nf_temp;
 
 # extract .webapp:
-tar -zxvf "$1";
+tar -zxvf "$webapp";
 
 # check if "name" file exists:
 if [ -f name ]; then
@@ -33,12 +39,14 @@ else
     url=`kdialog --inputbox URL:`
 fi
 
+
+
 # copy the icon and the launcher to respective paths:
 cp "$name".png ~/.local/share/icons/"$name".png;
 cp "$name".desktop ~/.local/share/applications/"$name".desktop;
 
 # make launcher executable:
-chmod +x .desktop ~/.local/share/applications/"$name".desktop;
+chmod +x ~/.local/share/applications/"$name".desktop;
 
 # make hidden directory ".webapp" in Home to store installed webapps:
 mkdir ~/.webapps;
@@ -46,8 +54,14 @@ mkdir ~/.webapps;
 # make "lib" folder in .webapp folder:
 mkdir ~/.webapps/lib;
 
-# exec nativefier injecting style.css and script.js
-nativefier -n "$name" -i "$name".png --inject style.css --inject script.js "$url" ~/.webapps/;
+# check if the PNG icon file exists:
+if [ -f "$name".png ]; then
+    # exec nativefier using the icon and injecting style.css and script.js
+    nativefier -n "$name" -i "$name".png --inject style.css --inject script.js "$url" ~/.webapps/;
+else
+    # exec nativefier without icon and injecting style.css and script.js
+    nativefier -n "$name" --inject style.css --inject script.js "$url" ~/.webapps/;
+fi
 
 # come back to parent folder:
 cd ..;

@@ -56,6 +56,17 @@ On KDE Plasma you can right-clik on the launcher of the Web App and click "Unins
 ![Uninstall entry](readme_images/unistall.jpg)
 
 ## How to create .webapp files
+
+### Script url2webapp
+
+In this repo you can find url2webapp script, it's a wizard made of kdialog windows that ask for the data and file needed (URL, Name, App ID, optionally also PNG icon, CSS and JS files). Click on it to launch the wizard or use the command line to specify the URL:
+
+```
+url2webapp https://example.com/
+```
+
+### Manually
+
 1. Download a .webapp file as example.
 2. Webapp files are just .tar.gz archives renamed. So to extract them, rename adding the extension ".tar.gz".
 3. Extract the .tar.gz, on Plasma: right-click > Extract > Extract Archive here.
@@ -79,4 +90,3 @@ As just said, .webapp files are .tar.gz archives with the 6 following files (no 
 5. `style.css` - IMPORTANT: don't rename it. Edit it with the CSS you want to add to your app during the building.
 
 6. `script.js` - same of style.css but for JavaScript code to be injected.
-

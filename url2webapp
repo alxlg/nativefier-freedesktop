@@ -1,0 +1,59 @@
+#!/bin/bash
+
+if [[ $# -eq 0 ]] ; then
+    URL=`kdialog --inputbox URL:`;
+else
+    URL=$1;
+    SAVE="/home/$USER";
+fi
+
+LNAME=`kdialog --inputbox 'Launcher name (i.e. My App):'`;
+NAME=`kdialog --inputbox 'App ID (i.e. com.domain.app, so icon themes add an icon for it):' | tr ' ' '_'`;
+
+mkdir .u2w_temp;
+cd .u2w_temp;
+touch url;
+echo "$URL" > url;
+touch name;
+echo "$NAME" > name;
+
+touch "$NAME".desktop;
+echo "[Desktop Entry]
+Name=$LNAME
+Categories=Network;
+Exec=~/.webapps/$NAME/$NAME
+Icon=$NAME
+Path=
+StartupNotify=true
+Terminal=false
+Type=Application
+Version=1.0
+
+Actions=uninstall
+
+[Desktop Action uninstall]
+
+Name=Uninstall
+Exec=kdialog --title Uninstall --warningyesno 'Are you sure?' && rm -rf ~/.webapps/$NAME/ && rm -rf ~/.local/share/applications/$NAME.desktop
+Icon=edit-delete
+
+Name[it]=Disinstalla
+Exec[it]=kdialog --title Disinstalla --warningyesno 'Sei sicuro?' && rm -rf ~/.webapps/$NAME/ && rm -rf ~/.local/share/applications/$NAME.desktop
+" > "$NAME".desktop;
+
+kdialog --yesno "Do you want to include a PNG icon in the package?" && ICON=`kdialog --getopenfilename ~ .png` && cp "$ICON" "$NAME".png;
+
+kdialog --yesno "Do you want to include a custom CSS stylesheet in the package?" && CSS=`kdialog --getopenfilename ~ .css` && cp "$CSS" style.css;
+
+kdialog --yesno "Do you want to include a custom JavaScript code in the package?" && JS=`kdialog --getopenfilename ~ .js` && cp "$CSS" script.js;
+
+
+tar -czvf "$NAME".webapp *;
+
+SAVE=`kdialog --getsavefilename ~ .webapp`;
+
+cp -f "$NAME".webapp "$SAVE".webapp;
+
+cd ..;
+
+rm -rf .u2w_temp;
