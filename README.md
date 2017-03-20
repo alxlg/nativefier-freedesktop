@@ -2,7 +2,9 @@
 Script to automate the installation of Nativefier (Electron) web apps on Linux, following Freedesktop specifications.
 
 Example of Web App built with this script (it's KDE Phabricator at phabricator.kde.org):
+
 ![Example of Web App](readme_images/example.jpg)
+
 It can be launched from app menu with a themable icon, it uses custom CSS and native notifications:
 
 ![Notification](readme_images/notification.jpg)
