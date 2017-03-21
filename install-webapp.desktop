@@ -17,6 +17,4 @@ Exec=nativefier-freedesktop %f
 Name=Add color scheme
 Name[it]=Aggiungi schema di colore
 Icon=list-add
-Exec=bash -c 'mkdir .nf_temp; tar -zxvf "%f" -C .nf_temp && name=`cat .nf_temp/name`; cp `kdialog --getopenfilename ~/.local/share/color-schemes/ .colors` .nf_temp/"$name".colors; cd .nf_temp; tar -czvf a.tar.gz *; cp -f a.tar.gz "%f"; cd ..;'
-
-#rm -rf .nf_temp;'
+Exec=bash -c 'mkdir .nf_temp; tar -zxvf "%f" -C .nf_temp && name=`cat .nf_temp/name`; cp `kdialog --getopenfilename ~/.local/share/color-schemes/ .colors` .nf_temp/"$name".colors; cd .nf_temp; tar -czvf a.tar.gz *; cp -f a.tar.gz "%f"; cd ..; rm -rf .nf_temp;'
