@@ -63,6 +63,12 @@ else
     nativefier -n "$name" --inject style.css --inject script.js "$url" ~/.webapps/;
 fi
 
+# check if the color scheme file exists:
+if [ -f "$name".colors ]; then
+    # exec nativefier using the icon and injecting style.css and script.js
+    cp "$name".colors ~/.local/share/color-schemes/"$name".colors;
+fi
+
 # come back to parent folder:
 cd ..;
 
