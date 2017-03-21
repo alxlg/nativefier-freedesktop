@@ -1,8 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
-<mime-type xmlns="http://www.freedesktop.org/standards/shared-mime-info" type="application/webapp">
-  <!--Created automatically by update-mime-database. DO NOT EDIT!-->
-  <comment>Web App</comment>
-  <icon name="text-x-install"/>
-  <glob-deleteall/>
-  <glob pattern="*.webapp"/>
-</mime-type>
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+   <mime-type type="application/x-example">
+     <comment>Web App</comment>
+     <magic priority="50">
+       <match value="search-string" type="string" offset="10:140"/>
+     </magic>
+     <glob pattern="*.webapp"/>
+   </mime-type>
+</mime-info>
