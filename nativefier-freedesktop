@@ -76,12 +76,15 @@ cd ..;
 rm -rf .nf_temp;
 
 # rename the installation folder removing "-linux-x64" from the name:
+rm -rf ~/.webapps/"$name";
 mv -f ~/.webapps/"$name"-linux-x64 ~/.webapps/"$name";
 
 # move to installation folder:
 cd ~/.webapps/"$name";
 
 # move the libraries that can be shared to "lib":
+rm -rf ~/.webapps/lib/libffmpeg.so;
+rm -rf ~/.webapps/lib/libnode.so;
 mv -f libffmpeg.so ~/.webapps/lib/libffmpeg.so;
 mv -f libnode.so ~/.webapps/lib/libnode.so;
 
