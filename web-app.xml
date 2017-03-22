@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+ <mime-info xmlns='http://www.freedesktop.org/standards/shared-mime-info'>
+   <mime-type type="application/webapp">  
+   <comment>Web Application Installer</comment>
+   <comment xml:lang="it">Installatore di Applicazione Web</comment>
+   <glob pattern="*.webapp"/>
+  </mime-type>
+ </mime-info>

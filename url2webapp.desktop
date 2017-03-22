@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name=Web App Creator
+Categories=Network;
+Comment[it]=Crea Applicazioni Web
+Comment=Build Web Applications
+Exec=url2webapp
+Icon=preferences-web-browser-stylesheets
+Path=
+StartupNotify=true
+Terminal=false
+TerminalOptions=
+Type=Application
+Version=1.0

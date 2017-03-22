@@ -93,4 +93,5 @@ ln -s -T ../lib/libffmpeg.so libffmpeg.so;
 ln -s -T ../lib/libnode.so libnode.so;
 
 # show notification:
-kdialog --passivepopup "Installation completed.";
+kdialog --title "Installation completed." --yesno ""$name" is ready.
+\n Do you want start it?" && ~/.webapps/"$name"/"$name"
