@@ -10,6 +10,7 @@ Icon=text-x-install
 [Desktop Action build]
 Name=Install
 Name[it]=Installa
+Name[pl]=Instaluj
 Icon=package-install
 Exec=nativefier-freedesktop %f
 
