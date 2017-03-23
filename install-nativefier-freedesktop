@@ -1,0 +1,46 @@
+#!/bin/bash
+
+command -v npm >/dev/null 2>&1 || { echo >&2 "I require npm but it's not installed.  Aborting."; exit 1; }
+
+command -v nativefier >/dev/null 2>&1 || sudo npm install nativefier -g && echo 'Nativefier installed';
+
+if [ $? -eq 0 ]; then
+    
+    mkdir ~/.local/share/icons;
+    mkdir ~/.local/share/applications/;
+    
+    wget https://raw.githubusercontent.com/alxlg/nativefier-freedesktop/master/nativefier-freedesktop;
+    chmod +x nativefier-freedesktop;
+    sudo rm -rf /usr/bin/nativefier-freedesktop;
+    sudo mv -f nativefier-freedesktop /usr/bin/nativefier-freedesktop && echo 'nativefier-freedesktop moved';
+    
+    wget https://raw.githubusercontent.com/alxlg/nativefier-freedesktop/master/url2webapp
+    chmod +x url2webapp;
+    sudo rm -rf /usr/bin/url2webapp;
+    sudo mv -f url2webapp /usr/bin/url2webapp && echo 'url2webapp moved';
+    
+    wget https://raw.githubusercontent.com/alxlg/nativefier-freedesktop/master/install-webapp.desktop
+    chmod +x install-webapp.desktop;
+    mkdir ~/.local/share/kservices5;
+    mkdir ~/.local/share/kservices5/ServiceMenus;
+    rm -rf  ~/.local/share/kservices5/ServiceMenus/install-webapp.desktop;
+    mv -f install-webapp.desktop ~/.local/share/kservices5/ServiceMenus/install-webapp.desktop && echo 'Sevice Menu moved';
+    
+    wget https://raw.githubusercontent.com/alxlg/nativefier-freedesktop/master/web-app.xml;
+    xdg-mime install web-app.xml;
+    
+    wget https://raw.githubusercontent.com/alxlg/nativefier-freedesktop/master/nativefier-freedesktop.desktop;
+    chmod +x nativefier-freedesktop.desktop;
+    mkdir ~/.local/share/applications;
+    mv -f nativefier-freedesktop.desktop ~/.local/share/applications/nativefier-freedesktop.desktop && echo 'Launcher Nativefier Freedesktop moved';
+    
+    wget https://raw.githubusercontent.com/alxlg/nativefier-freedesktop/master/url2webapp.desktop;
+    chmod +x url2webapp.desktop;
+    mv -f url2webapp.desktop ~/.local/share/applications/url2webapp.desktop && echo 'Launcher url2webapp moved';
+    
+    # (to be used in future) install the icon(s) for *.webapp files:
+    #xdg-icon-resource install --context mimetypes --size 64 application-webapp-64.png application-webapp
+    
+else
+    echo 'Error installing Nativefier with "sudo npm install nativefier -g"'
+fi

@@ -54,6 +54,9 @@ mkdir ~/.webapps;
 # make "lib" folder in .webapp folder:
 mkdir ~/.webapps/lib;
 
+# inform the installation is starting:
+kdialog --msgbox 'The installation has begun and may take a few minutes. You will be notified upon completion.';
+
 # check if the PNG icon file exists:
 if [ -f "$name".png ]; then
     # exec nativefier using the icon and injecting style.css and script.js
@@ -68,6 +71,14 @@ for i in *.colors
 do
     cp -f "$i" ~/.local/share/color-schemes/;
 done
+
+if [ $? -eq 0 ]; then
+    install-completed=0;
+else
+    install-completed=1;
+fi
+
+
 
 # come back to parent folder:
 cd ..;
@@ -93,5 +104,9 @@ ln -s -T ../lib/libffmpeg.so libffmpeg.so;
 ln -s -T ../lib/libnode.so libnode.so;
 
 # show notification:
-kdialog --title "Installation completed." --yesno ""$name" is ready.
-\n Do you want start it?" && ~/.webapps/"$name"/"$name"
+if [ install-completed -eq 0 ]; then
+    kdialog --title "Installation completed" --yesno "$name is ready.
+\n Do you want start it?" && ~/.webapps/"$name"/"$name";
+else
+    kdialog --title "Error" --yesno "An error occurred during installation of $name. For a more detailed report, do you want to try again from the command line?" && konsole -e nativefier-freedesktop "$webapp"
+fi

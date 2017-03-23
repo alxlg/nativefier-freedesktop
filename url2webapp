@@ -29,7 +29,7 @@ Terminal=false
 Type=Application
 Version=1.0
 
-Actions=uninstall
+Actions=uninstall;in-browser;
 
 [Desktop Action uninstall]
 
@@ -39,6 +39,13 @@ Icon=edit-delete
 
 Name[it]=Disinstalla
 Exec[it]=kdialog --title Disinstalla --warningyesno 'Sei sicuro?' && rm -rf ~/.webapps/$NAME/ && rm -rf ~/.local/share/applications/$NAME.desktop
+
+[Desktop Action in-browser]
+
+Name=Open in the browser
+Exec=xdg-open $URL
+Icon=internet-web-browser
+Name[it]=Apri nel browser
 " > "$NAME".desktop;
 
 kdialog --yesno "Do you want to include a PNG icon in the package?" && ICON=`kdialog --getopenfilename ~ .png` && cp "$ICON" "$NAME".png;
