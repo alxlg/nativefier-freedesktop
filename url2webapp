@@ -1,14 +1,22 @@
 #!/bin/bash
 
 if [[ $# -eq 0 ]] ; then
-    URL=`kdialog --inputbox URL:`;
+    URL=`kdialog --title "URL" --inputbox "
+Insert the URL:
+    "` || exit 0;
 else
     URL=$1;
     SAVE="/home/$USER";
 fi
 
-LNAME=`kdialog --inputbox 'Launcher name (i.e. My App):'`;
-NAME=`kdialog --inputbox 'App ID (i.e. com.domain.app, so icon themes add an icon for it):' | tr ' ' '_'`;
+LNAME=`kdialog --title "Launcher" --inputbox "
+Define the launcher name (i.e. My App):
+"`|| exit 0;
+temp_NAME=`kdialog --title "App ID" --inputbox "
+Define an app ID (i.e. reverse URL like com.domain.subdomain), 
+so icon themes can identify it and ship a custom icon:
+" ` || exit 0;
+NAME=`echo "$temp_NAME" | tr ' ' '_'`;
 
 mkdir .u2w_temp;
 cd .u2w_temp;
@@ -29,7 +37,16 @@ Terminal=false
 Type=Application
 Version=1.0
 
-Actions=uninstall;in-browser;
+Actions=in-browser;reinstall;uninstall;
+[Desktop Action reinstall]
+
+Name=Reinstall
+Exec=kdialog --title Reinstall --warningyesno 'Are you sure?' && nativefier-freedesktop ~/.webapps/$NAME/$NAME.webapp
+Icon=view-refresh
+
+Name[it]=Reinstalla
+Exec[it]=kdialog --title Reinstalla --warningyesno 'Sei sicuro?' && && nativefier-freedesktop ~/.webapps/$NAME/$NAME.webapp
+
 
 [Desktop Action uninstall]
 
@@ -48,16 +65,26 @@ Icon=internet-web-browser
 Name[it]=Apri nel browser
 " > "$NAME".desktop;
 
-kdialog --yesno "Do you want to include a PNG icon in the package?" && ICON=`kdialog --getopenfilename ~ .png` && cp "$ICON" "$NAME".png;
+kdialog --title "Icon" --yesno "Do you want to include a PNG icon in the package?" && ICON=`kdialog --getopenfilename ~ .png` && cp "$ICON" "$NAME".png;
 
-kdialog --yesno "Do you want to include a custom CSS stylesheet in the package?" && CSS=`kdialog --getopenfilename ~ .css` && cp "$CSS" style.css;
+kdialog --title "Stylesheet" --yesno "Do you want to include a custom CSS stylesheet in the package?" && CSS=`kdialog --getopenfilename ~ .css` && cp "$CSS" .;
 
-kdialog --yesno "Do you want to include a custom JavaScript code in the package?" && JS=`kdialog --getopenfilename ~ .js` && cp "$CSS" script.js;
+kdialog --title "Script" --yesno "Do you want to include a custom JavaScript code in the package?" && JS=`kdialog --getopenfilename ~ .js` && cp "$CSS" .;
+
+for i in *.css
+    do
+        mv -f "$i" "`echo $i | tr ' ' '_'`"
+    done;
+    
+for i in *.js
+    do
+        mv -f "$i" "`echo $i | tr ' ' '_'`"
+    done;
 
 
 tar -czvf "$NAME".webapp *;
 
-SAVE=`kdialog --getsavefilename ~ .webapp`;
+SAVE=`kdialog --getsavefilename ~ .webapp` || exit 0;
 
 cp -f "$NAME".webapp "$SAVE".webapp;
 

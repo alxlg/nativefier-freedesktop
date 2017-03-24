@@ -2,6 +2,11 @@
 
 if [[ $# -eq 0 ]] ; then
     webapp=`kdialog --getopenfilename ~ .webapp`;
+    if [ $? -eq 0 ]; then
+    echo "$webapp selected"
+    else
+        exit 0;
+    fi
 else
     webapp="$1";
 fi
@@ -29,6 +34,12 @@ else
     name=`kdialog --inputbox "Name, i.e. org.kde.webapp:" | tr ' ' '_'`
 fi
 
+# read launcher name:
+lname=`kreadconfig  --group 'Desktop Entry' --key Name --file $PWD/$name.desktop`
+
+# confirm installation:
+kdialog --title "Install Web App" --yesno "Do you want to install $lname?" || exit 0;
+
 # check if "url" file exists:
 if [ -f url ]; then
     # if yes, assign "url" var to its content:
@@ -54,31 +65,111 @@ mkdir ~/.webapps;
 # make "lib" folder in .webapp folder:
 mkdir ~/.webapps/lib;
 
+# count *.css styles available:
+cssn=`ls | grep .css | wc -l`;
+
+# if there are more *.css let the user choose with a dialog:
+if [ "$cssn" -gt "1" ]; then
+    k=0;
+
+    touch .tempfile
+    onoff='on'
+
+    for i in *.css
+        do
+            declare style_$k=`echo "${i%.*}"`;
+            #echo "$k" >> .tempfile
+            echo "$i" >> .tempfile
+            echo "${i%.*}" >> .tempfile
+            echo "$onoff" >> .tempfile
+            onoff='off'
+            ((k++))
+        done;
+
+    kd_arg=`cat .tempfile | tr '\n' ' '`
+
+    rm -rf .tempfile
+
+    style=`kdialog --radiolist "Select a theme:" $kd_arg 0 None off`
+    
+    if [ "$style" -eq 0 ]; then
+    touch nostyle.css
+    style=nostyle.css
+    fi
+    
+    #for i in *.css
+    #do
+    #    declare style_$k=`echo "${i%.*}" | tr ' ' '_'`;
+    #    ((k++));
+    #done;
+    #style=`kdialog --combobox "Choose a theme or leave it blank\nto use the web site default style:" $style_0 $style_1 $style_2 $style_3 $style_4 $style_5 $style_6 $style_7 $style_8 $style_9`.css | tr '_' ' ';
+else
+    style=`ls | grep .css`
+fi
+
+if [ "$cssn" -eq 0 ]; then
+    touch nostyle.css
+    style=nostyle.css
+fi
+
+## count *.js scripts available:
+jsn=`ls | grep .js | wc -l`;
+
+# if there is a *.js with the same name of the selected CSS, use it, if not, let the user choose:
+
+if [ -f "${style%.*}.js" ]; then
+
+script="${style%.*}.js"
+
+else
+    if [ "$jsn" -gt "1" ]; then
+        k=0;
+
+        for i in *.js
+        do
+            declare script_$k=`echo "${i%.*}" | tr ' ' '_'`;
+            ((k++));
+        done;
+        script=`kdialog --combobox 'Choose a script:' $script_0 $script_1 $script_2 $script_3 $script_4 $script_5 $script_6 $script_7 $script_8 $script_9`.css;
+    else
+        script=`ls | grep .js`
+    fi
+fi
+
+if [ "$jsn" -eq 0 ]; then
+    touch noscript.js
+    script=noscript.js
+fi
+
 # inform the installation is starting:
-kdialog --msgbox 'The installation has begun and may take a few minutes. You will be notified upon completion.';
+kdialog --msgbox "The installation has begun and may take a few minutes.\nYou will be notified upon completion.";
 
 # check if the PNG icon file exists:
 if [ -f "$name".png ]; then
     # exec nativefier using the icon and injecting style.css and script.js
-    nativefier -n "$name" -i "$name".png --inject style.css --inject script.js "$url" ~/.webapps/;
+    nativefier -n "$name" -i "$name".png --inject "$style" --inject "$script" "$url" ~/.webapps/;
 else
     # exec nativefier without icon and injecting style.css and script.js
-    nativefier -n "$name" --inject style.css --inject script.js "$url" ~/.webapps/;
+    nativefier -n "$name" --inject "$style" --inject "$script" "$url" ~/.webapps/;
+
 fi
+
+
 
 # check if the color scheme file exists:
-for i in *.colors
-do
-    cp -f "$i" ~/.local/share/color-schemes/;
-done
+colorn=`ls | grep .colors | wc -l`;
 
-if [ $? -eq 0 ]; then
-    install-completed=0;
-else
-    install-completed=1;
+if [ "$colorn" -gt 0 ]; then
+
+    for i in *.colors
+    do
+        cp -f "$i" ~/.local/share/color-schemes/;
+    done
 fi
 
-
+# backup installers
+mkdir ~/.webapps/installers
+cp -f "$webapp" ~/.webapps/installers/"$name".webapp
 
 # come back to parent folder:
 cd ..;
@@ -89,6 +180,11 @@ rm -rf .nf_temp;
 # rename the installation folder removing "-linux-x64" from the name:
 rm -rf ~/.webapps/"$name";
 mv -f ~/.webapps/"$name"-linux-x64 ~/.webapps/"$name";
+if [ $? -eq 0 ]; then
+    echo 'binaries correclty built with Nativefier'
+    else
+        kdialog --title "Error" --yesno "An error occurred during installation of $lname. For a more detailed report, do you want to try again from the command line?" && konsole -e nativefier-freedesktop "$webapp"
+    fi
 
 # move to installation folder:
 cd ~/.webapps/"$name";
@@ -104,9 +200,5 @@ ln -s -T ../lib/libffmpeg.so libffmpeg.so;
 ln -s -T ../lib/libnode.so libnode.so;
 
 # show notification:
-if [ install-completed -eq 0 ]; then
-    kdialog --title "Installation completed" --yesno "$name is ready.
-\n Do you want start it?" && ~/.webapps/"$name"/"$name";
-else
-    kdialog --title "Error" --yesno "An error occurred during installation of $name. For a more detailed report, do you want to try again from the command line?" && konsole -e nativefier-freedesktop "$webapp"
-fi
+kdialog --title "Installation completed" --yesno "$lname is ready.
+\n Do you want launch it?" && ~/.webapps/"$name"/"$name";
