@@ -81,7 +81,7 @@ fi
 flash=1;
 kdialog --title "Install Web App" --yesno "Does $lname need flash support?" || flash=0;
 if [ "$flash" -eq 1 ]; then
-	fp=`locate libpepflashplayer.so`;
+	fp=`locate -e -L -l 1 -b '\libpepflashplayer.so'`;
 	case "$?" in
 		1)
 			echo 'No flash plugin available'
