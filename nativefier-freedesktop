@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 
 if [[ $# -eq 0 ]] ; then
     webapp=`kdialog --getopenfilename ~ .webapp`;
@@ -8,20 +8,41 @@ if [[ $# -eq 0 ]] ; then
         exit 0;
     fi
 else
-    webapp="$1";
+	if [[ "$1" == "--help" ]] ; then
+		echo "
+    Usage: nativefier-freedesktop [options] [<file.webapp>]
+
+    Options:
+
+        --help                  shows this helps message
+
+
+    <file.webapp>: a .webapp file used as a guide to create the application;
+                   if not specified, a file dialog will popup to ask for a
+                   .webapp file;
+                   use the url2webapp script to create a .webapp file from
+                   an url
+"
+		exit 0;
+	else
+		webapp="$1";
+    fi
 fi
 
 # make temp folder:
 mkdir .nf_temp;
 
+# resolve absolute path if relative, otherwise cp on line 219 will fail
+webapp=`readlink -f "$webapp"`;
+
 # copy the .webapp into it:
-cp "$webapp" .nf_temp/"$webapp"
+cp "$webapp" ".nf_temp/${webapp##*/}"
 
 # move to it:
 cd .nf_temp;
 
 # extract .webapp:
-tar -zxvf "$webapp";
+tar -zxvf "${webapp##*/}";
 
 # check if "name" file exists:
 if [ -f name ]; then
@@ -32,6 +53,11 @@ else
     # (useful for self-hosted apps with custom domain)
     # as convention use reverse URL, i.e. org.kde.webapp:
     name=`kdialog --inputbox "Name, i.e. org.kde.webapp:" | tr ' ' '_'`
+    if [ -z $name ]; then
+		echo "File name is empty"
+		rm -rf .nf_temp;
+		exit 0;
+	fi
 fi
 
 # read launcher name:
@@ -50,6 +76,28 @@ else
     url=`kdialog --inputbox URL:`
 fi
 
+
+# support flash?:
+flash=1;
+kdialog --title "Install Web App" --yesno "Does $lname need flash support?" || flash=0;
+if [ "$flash" -eq 1 ]; then
+	fp=`locate -e -L -l 1 -b '\libpepflashplayer.so'`;
+	case "$?" in
+		1)
+			echo 'No flash plugin available'
+			flash=0
+			;;
+		127)
+			echo 'locate command not installed'
+			flash=0
+			;;
+	esac
+fi
+if [ "$flash" -eq "1" ]; then
+	fcmd="--flash --flash-path $fp";
+else
+	fcmd='';
+fi
 
 
 # copy the icon and the launcher to respective paths:
@@ -91,12 +139,12 @@ if [ "$cssn" -gt "1" ]; then
     rm -rf .tempfile
 
     style=`kdialog --radiolist "Select a theme:" $kd_arg 0 None off`
-    
+
     if [ "$style" -eq 0 ]; then
     touch nostyle.css
     style=nostyle.css
     fi
-    
+
     #for i in *.css
     #do
     #    declare style_$k=`echo "${i%.*}" | tr ' ' '_'`;
@@ -147,11 +195,10 @@ kdialog --msgbox "The installation has begun and may take a few minutes.\nYou wi
 # check if the PNG icon file exists:
 if [ -f "$name".png ]; then
     # exec nativefier using the icon and injecting style.css and script.js
-    nativefier -n "$name" -i "$name".png --inject "$style" --inject "$script" "$url" ~/.webapps/;
+    nativefier -n "$name" -i "$name".png $fcmd --inject "$style" --inject "$script" "$url" ~/.webapps/;
 else
     # exec nativefier without icon and injecting style.css and script.js
-    nativefier -n "$name" --inject "$style" --inject "$script" "$url" ~/.webapps/;
-
+    nativefier -n "$name" $fcmd --inject "$style" --inject "$script" "$url" ~/.webapps/;
 fi
 
 
