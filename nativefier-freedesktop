@@ -195,10 +195,10 @@ kdialog --msgbox "The installation has begun and may take a few minutes.\nYou wi
 # check if the PNG icon file exists:
 if [ -f "$name".png ]; then
     # exec nativefier using the icon and injecting style.css and script.js
-    nativefier -n "$name" -i "$name".png $fcmd --inject "$style" --inject "$script" "$url" ~/.webapps/;
+    nativefierOutput=`nativefier -n "$name" -i "$name".png $fcmd --inject "$style" --inject "$script" "$url" ~/.webapps/ | sed -n '1,//s/App built to //p'`;
 else
     # exec nativefier without icon and injecting style.css and script.js
-    nativefier -n "$name" $fcmd --inject "$style" --inject "$script" "$url" ~/.webapps/;
+    nativefierOutput=`nativefier -n "$name" $fcmd --inject "$style" --inject "$script" "$url" ~/.webapps/ | sed -n '1,//s/App built to //p'`;
 fi
 
 
@@ -224,9 +224,11 @@ cd ..;
 # remove temp folder:
 rm -rf .nf_temp;
 
-# rename the installation folder removing "-linux-x64" from the name:
+# rename the installation folder from nativefier's default name
 rm -rf ~/.webapps/"$name";
-mv -f ~/.webapps/"$name"-linux-x64 ~/.webapps/"$name";
+mv -f "$nativefierOutput" ~/.webapps/"$name";
+# also rename the executable
+mv $(find ~/.webapps/"$name"/ -type f -executable -print | grep -v -e lib -e.so) ~/.webapps/"$name"/"$name"
 if [ $? -eq 0 ]; then
     echo 'binaries correclty built with Nativefier'
     else
