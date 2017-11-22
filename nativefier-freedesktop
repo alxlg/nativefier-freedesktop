@@ -227,6 +227,8 @@ rm -rf .nf_temp;
 # rename the installation folder from nativefier's default name
 rm -rf ~/.webapps/"$name";
 mv -f "$nativefierOutput" ~/.webapps/"$name";
+# also rename the executable
+mv $(find ~/.webapps/"$name"/ -type f -executable -print | grep -v -e lib -e.so) ~/.webapps/"$name"/"$name"
 if [ $? -eq 0 ]; then
     echo 'binaries correclty built with Nativefier'
     else
